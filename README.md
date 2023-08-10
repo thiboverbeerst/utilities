@@ -1,2 +1,2 @@
-# utilities
+# Utilities
 Tools and Utilities
