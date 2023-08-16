@@ -1,0 +1,86 @@
+CREATE DATABASE mydeliveries;
+
+USE mydeliveries;
+
+CREATE TABLE drivers
+(dno		CHAR(3) NOT NULL,
+ dname		CHAR(20),
+ STATUS		INT,
+ city	 	CHAR(20),
+ CONSTRAINT pk_drivers PRIMARY KEY(dno)) 
+ ENGINE = INNODB;
+
+CREATE TABLE articles
+(ano		CHAR(3) NOT NULL,
+ aname		CHAR(20),
+ quality  	INT,
+ weight 	INT,
+ city		CHAR(20),
+ CONSTRAINT pk_articles PRIMARY KEY(ano)) 
+ ENGINE = INNODB;
+
+CREATE TABLE projects
+(pno		CHAR(3) NOT NULL,
+ pname		CHAR(20),
+ city	 	CHAR(20),
+ CONSTRAINT pk_projects PRIMARY KEY(pno)) 
+ ENGINE = INNODB;
+
+CREATE TABLE deliveries
+(dno		CHAR(3) NOT NULL,
+ ano		CHAR(3) NOT NULL,
+ pno		CHAR(3) NOT NULL,
+ quantity	INT,
+ CONSTRAINT pk_deliveries PRIMARY KEY(dno,ano,pno),
+ CONSTRAINT fk1_deliveries FOREIGN KEY(dno) REFERENCES drivers(dno),
+ CONSTRAINT fk2_deliveries FOREIGN KEY(ano) REFERENCES articles(ano),
+ CONSTRAINT fk3_deliveries FOREIGN KEY(pno) REFERENCES projects(pno)) 
+ ENGINE = INNODB;
+
+INSERT INTO drivers VALUES ('D1','Smith',20,'Brussels');
+INSERT INTO drivers VALUES ('D2','Jones',10,'Antwerp');
+INSERT INTO drivers VALUES ('D3','Blake',30,'Antwerp');
+INSERT INTO drivers VALUES ('D4','Clark',20,'Brussels');
+INSERT INTO drivers VALUES ('D5','Adams',30,'Ghent');
+
+INSERT INTO articles VALUES ('A1','Table',1,30,'Brussels');
+INSERT INTO articles VALUES ('A2','Barstool',2,3,'Antwerp');
+INSERT INTO articles VALUES ('A3','ChairT1',3,8,'Leuven');
+INSERT INTO articles VALUES ('A4','ChairT2',1,9,'Brussels');
+INSERT INTO articles VALUES ('A5','2-Seat',3,40,'Antwerp');
+INSERT INTO articles VALUES ('A6','Parasol',1,6,'Brussels');
+
+INSERT INTO projects VALUES ('P1','Summer20','Antwerp');
+INSERT INTO projects VALUES ('P2','StudentParty','Leuven');
+INSERT INTO projects VALUES ('P3','CityGames','Ghent');
+INSERT INTO projects VALUES ('P4','Smak','Ghent');
+INSERT INTO projects VALUES ('P5','MarketShow','Brussels');
+INSERT INTO projects VALUES ('P6','CitadelParty','Namen');
+INSERT INTO projects VALUES ('P7','SquareFestival','Brussels');
+
+INSERT INTO deliveries VALUES ('D1','A1','P1',200);
+INSERT INTO deliveries VALUES ('D1','A1','P4',700);
+INSERT INTO deliveries VALUES ('D2','A3','P1',400);
+INSERT INTO deliveries VALUES ('D2','A3','P2',200);
+INSERT INTO deliveries VALUES ('D2','A3','P3',200);
+INSERT INTO deliveries VALUES ('D2','A3','P4',500);
+INSERT INTO deliveries VALUES ('D2','A3','P5',600);
+INSERT INTO deliveries VALUES ('D2','A3','P6',400);
+INSERT INTO deliveries VALUES ('D2','A3','P7',800);
+INSERT INTO deliveries VALUES ('D2','A5','P2',100);
+INSERT INTO deliveries VALUES ('D3','A3','P1',200);
+INSERT INTO deliveries VALUES ('D3','A4','P2',500);
+INSERT INTO deliveries VALUES ('D4','A6','P3',300);
+INSERT INTO deliveries VALUES ('D4','A6','P7',300);
+INSERT INTO deliveries VALUES ('D5','A2','P2',200);
+INSERT INTO deliveries VALUES ('D5','A2','P4',100);
+INSERT INTO deliveries VALUES ('D5','A5','P5',500);
+INSERT INTO deliveries VALUES ('D5','A5','P7',100);
+INSERT INTO deliveries VALUES ('D5','A6','P2',200);
+INSERT INTO deliveries VALUES ('D5','A1','P4',100);
+INSERT INTO deliveries VALUES ('D5','A3','P4',200);
+INSERT INTO deliveries VALUES ('D5','A4','P4',800);
+INSERT INTO deliveries VALUES ('D5','A5','P4',400);
+INSERT INTO deliveries VALUES ('D5','A6','P4',500);
+
+

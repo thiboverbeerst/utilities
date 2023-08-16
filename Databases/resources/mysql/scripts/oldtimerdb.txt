@@ -1,0 +1,109 @@
+CREATE DATABASE oldtimerdb;
+
+USE oldtimerdb;
+
+CREATE TABLE members 
+(
+ memberno	INT AUTO_INCREMENT NOT NULL,
+ membername   	VARCHAR(50),
+ membertype     CHAR(6),
+ address       	VARCHAR(100),
+ city      	VARCHAR(100),
+ CONSTRAINT pk_members PRIMARY KEY (memberno)
+) ENGINE = INNODB;
+
+INSERT INTO members(membername, membertype, address, city) 
+VALUES 	('Verbeek', 'SENIOR', 'Parklaan 210', 'Sassenheim'),
+	('Schutyser', 'SENIOR', 'Bosweg 17', 'Noordwijk'),
+	('Vogels', 'SENIOR', 'Schans 35', 'Noordwijk'),
+	('Lenstra', 'SENIOR', 'Meerweg 24', 'Heemstede'),
+	('Pronk', 'SENIOR', 'Dreef 11', 'Aalsmeer'),
+	('Mol', 'JUNIOR', 'Hogeweg 94', 'Zandvoort'),
+	('Otten', 'JUNIOR', 'Hogeweg 96', 'Zandvoort'),
+	('Dregtman', 'JUNIOR', 'Vosselaan 93', 'Hillegom'),
+	('Verbeek', 'SENIOR', 'Parklaan 210', 'Sassenheim'),
+	('Pronk', 'JUNIOR', 'Dreef 11', 'Aalsmeer'),
+	('Dekker', 'SENIOR', 'Lindenlaan 67', 'Sassenheim'),
+	('Wouters', 'JUNIOR', 'Emmaweg 32', 'Zandvoort'),
+	('Bos', 'JUNIOR', 'Dorpsstraat 210', 'Aalsmeer'),
+	('Bakker', 'JUNIOR', 'Mesdaglaan 84', 'Hillegom');
+
+
+CREATE TABLE cars 
+(
+ carno	     INT AUTO_INCREMENT NOT NULL, 
+ carname     CHAR(50),
+ YEAR        INT,
+ VALUE       INT,
+ passengers  INT,
+ memberno    INT,
+ CONSTRAINT pk_cars PRIMARY KEY (carno),
+ CONSTRAINT fk_cars FOREIGN KEY (memberno) REFERENCES members(memberno)
+) ENGINE = INNODB;
+
+INSERT INTO cars (carname, YEAR, VALUE, passengers, memberno)
+VALUES 	('Ford MODEL A', 1930, 3000, 4, 3),
+	('Rolls-Royce Phantom II', 1931, 85000, 4, 1),
+	('Austin Ten', 1936, 3800, 4, 5),
+	('Duesenberg Model-J', 1932, 65000, 4, 8),
+	('Riley 9HP IMP', 1935, 4500, 2, 2),
+	('Singer Le Mans Speedster', 1934, 12500, 2, 1),
+	('Singer SM Roadster', 1954, 2500, 2, 4),
+	('Jaguar XK 120', 1952, 6500, 2, 11),
+	('Hornet Special', 1935, 5600, 2, 2),
+	('Oldsmobile Curved Dash', 1901, 8000, 2, 1),
+	('Austin Seven Chummy', 1923, 2000, 4, 3),
+	('Bentley R-Type', 1952, 4200, 4, 14);
+
+
+CREATE TABLE EVENTS 
+(
+ eventno    INT NOT NULL,
+ eventname  VARCHAR(50),
+ eventdate  DATE,
+ location   VARCHAR(50),
+ eventtype  VARCHAR(50),
+ price      INT,
+ CONSTRAINT pk_events PRIMARY KEY (eventno)
+) ENGINE = INNODB;
+
+INSERT INTO EVENTS(eventno, eventname, eventdate, location, eventtype, price)
+VALUES 	(201501, 'Bollentocht', '2015-06-17', 'Keukenhof', 'Optocht', 25),
+	(201502, 'Zandvoort 2015', '2015-07-16', 'Boulevard', 'Toerrit', 45),
+	(201503, 'Amsterdam OldTimer', '2015-08-02', 'Damrak', 'Optocht', 15),
+	(201504, 'Amsterdam OldTimer', '2015-08-05', 'DeRai', 'Show', 5),
+	(201505, 'Hillegom Feestweek', '2015-08-19', 'Beeklaan', 'Toerrit', 38);
+
+
+CREATE TABLE carparticipations  
+(
+ carno	       	INT NOT NULL,
+ eventno    INT NOT NULL,
+ CONSTRAINT pk_carparticipations PRIMARY KEY (carno, eventno),
+ CONSTRAINT fk1_carparticipations FOREIGN KEY (carno) REFERENCES cars(carno),
+ CONSTRAINT fk2_carparticipations FOREIGN KEY (eventno) REFERENCES EVENTS(eventno)
+) ENGINE = INNODB;
+
+INSERT INTO carparticipations(carno, eventno) 
+VALUES 	(1, 201501),
+	(2, 201501),
+	(2, 201502),
+	(4, 201502),
+	(7, 201502),
+	(8, 201502),
+	(10, 201502),
+	(11, 201502),
+	(2, 201503),
+	(4, 201503),
+	(6, 201503),
+	(10, 201503),
+	(11, 201503),
+	(2, 201504),
+	(4, 201504),
+	(6, 201504),
+	(10, 201504),
+	(11, 201504),
+	(1, 201505),
+	(3, 201505),
+	(6, 201505),
+	(12, 201505);

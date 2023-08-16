@@ -1,0 +1,118 @@
+
+-- 1
+Create a new graph database BeerAndBreweries and run the script
+BeerAndBreweries.txt.
+
+-- 2
+Exploration of the graph database:
+a. List all beers, sorted by name.
+Look at all possible views (Graph, Table, Text).
+What are the export possibilities? Export to a CSV file.
+b. Limit the output to the beer name (no other beer data) of all beers.
+Look at all possible views (Table, Text).
+c. List all breweries sorted by name.
+d. Limit the output to the brewery name, address1, city, state and country.
+
+match (b:Beer) return b order by b.name
+match (b:Beer) return b.name order by b.name
+match (br:Brewery) return br order by br.name
+match (br:Brewery) return br.name, br.address1, br.city, br.state, br.country order by br.name
+
+
+
+-- 3
+Give the beers, which are brewed in San Francisco, with their brewery.
+match (b:Beer)-[:BREWED_AT]->(br:Brewery{city:'San Francisco'}) return b, br
+
+
+-- 4
+Give the breweries from Belgium with their beers. Give the name, city and state of
+these breweries and give the name and abv (alcohol by volume) of their beers.
+Sort on brewery name and on beer name
+
+
+match (br:Brewery{country:'Belgium'})<-[:BREWED_AT]-(b:Beer)
+return br.name, br.city, br.state, b.name, b.abv
+order by br.name, b.name
+
+
+-- 5
+For the breweries from Belgium, give the number of beers in the database.
+Sort descending by number of beers.
+
+match (br:Brewery{country:'Belgium'})<-[:BREWED_AT]-(b:Beer)
+return br.name, br.city, br.state, count(*) as countBeerBelgium
+order by countBeerBelgium desc
+
+
+-- 6
+List the beers by category. Sort by category and within that by beer name.
+
+match (c:Category)<-[:BEER_CATEGORY]-(b:Beer)
+return c, b
+order by c.category, b.name
+
+-- 7
+List a collection of beers by category (1 line per category). Sort by category.
+
+match (c:Category)<-[:BEER_CATEGORY]-(b:Beer)
+return c, collect(b)
+order by c.category
+
+
+-- 8
+Give the number of beers per category.
+
+match (c:Category)<-[:BEER_CATEGORY]-(b:Beer)
+return c, count(*) as countBeers
+order by c.category
+
+
+-- 9
+For each category, give the number of breweries that brew beer from that category.
+
+match (c:Category)<-[:BEER_CATEGORY]-(b:Beer)-[:BREWED_AT]->(br:Brewery)
+return c, count(distinct br.name) as countBreweries
+order by c.category
+
+
+-- 10
+Give the beers with the same style as the beer 'Leffe Blonde'.
+
+match (b1:Beer {name:'Leffe Blonde'})-[:BEER_STYLE]->(s:Style)<-[:BEER_STYLE]-
+(b2:Beer)
+return b1, s, b2
+
+
+-- 11
+Add a beer: 'Leffe Radieuse' with abv: 8, category 'North American Ale', style: 'Golden
+or Blond Ale', brewery: 'Abbaye de Leffe'.
+To verify, give the beer node 'Leffe Radieuse' and press 'Expand / Collapse child
+relationships' in the graphic representation of the node.
+
+
+match (c:Category {category:'North American Ale'})
+match (s:Style {style:'Golden or Blonde Ale'})
+match (br:Brewery {name:'Abbaye de Leffe'})
+create (b:Beer {name:'Leffe Radieuse', abv:8})
+create (b)-[:BEER_CATEGORY]->(c)
+create (b)-[:BEER_STYLE]->(s)
+create (b)-[:BREWED_AT]->(br)
+//check
+match (b:Beer {name:'Leffe Radieuse'})
+return b
+//Expand / Collapse child relationships
+
+
+
+-- 12
+Change abv (alcohol by volume) of 'Leffe Radieuse' to 8.2
+
+match (b:Beer {name:'Leffe Radieuse'})
+set b.abv=8.2
+
+-- 13
+Remove the node 'Leffe Radieuse' with all its relations.
+
+match (b:Beer {name:'Leffe Radieuse'})
+detach delete b

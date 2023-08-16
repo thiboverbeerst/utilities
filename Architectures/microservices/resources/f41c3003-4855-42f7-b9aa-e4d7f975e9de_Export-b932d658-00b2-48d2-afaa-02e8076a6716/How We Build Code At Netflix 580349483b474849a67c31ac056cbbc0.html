@@ -1,0 +1,688 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>How We Build Code At Netflix</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+    margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-interactiveBlue { background-color: rgba(35, 131, 226, .07); }
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-translucentGray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="58034948-3b47-4849-a67c-31ac056cbbc0" class="page sans"><header><h1 class="page-title">How We Build Code At Netflix</h1><p class="page-description"></p></header><div class="page-body"><p id="d1e56367-26b8-45b3-a6ae-9159348b523f" class="">How does Netflix build code before it’s deployed to the cloud? While pieces of this story have been told in the past, we decided it was time we shared more details. In this post, we describe the tools and techniques used to go from source code to a deployed service serving movies and TV shows to more than 75 million global Netflix members.</p><figure id="1a5d5b8d-d7c5-43e0-84fe-e8d817630655" class="image"><a href="https://miro.medium.com/v2/resize:fit:1050/0*QWuMAV9aACZiLL0a."><img style="width:700px" src="https://miro.medium.com/v2/resize:fit:1050/0*QWuMAV9aACZiLL0a."/></a></figure><p id="636c31ac-83da-4b93-b7b7-93a05a7aea31" class="">The above diagram expands on a previous <a href="https://medium.com/@Netflix_Techblog/global-continuous-delivery-with-spinnaker-2a6896c23ba7">post announcing Spinnaker</a>, our global continuous delivery platform. There are a number of steps that need to happen before a line of code makes it way into Spinnaker:</p><ul id="870802d8-d0f9-451e-a324-cf1f936128be" class="bulleted-list"><li style="list-style-type:disc">Code is built and tested locally using <a href="http://nebula-plugins.github.io/">Nebula</a></li></ul><ul id="d488dc8b-66e2-462b-9c85-35928362cce8" class="bulleted-list"><li style="list-style-type:disc">Changes are committed to a central git repository</li></ul><ul id="96662ef9-6112-4065-845b-cdd1511f02b4" class="bulleted-list"><li style="list-style-type:disc">A Jenkins job executes Nebula, which builds, tests, and packages the application for deployment</li></ul><ul id="e4571f7e-f40a-4372-8493-24afdfb863d9" class="bulleted-list"><li style="list-style-type:disc">Builds are “baked” into Amazon Machine Images</li></ul><ul id="932c438c-d808-49a3-826f-60610b9666e1" class="bulleted-list"><li style="list-style-type:disc">Spinnaker pipelines are used to deploy and promote the code change</li></ul><p id="b8412c5d-a4e9-4dc0-b6f6-2ef6c0ba9bf7" class="">The rest of this post will explore the tools and processes used at each of these stages, as well as why we took this approach. We will close by sharing some of the challenges we are actively addressing. You can expect this to be the first of many posts detailing the tools and challenges of building and deploying code at Netflix.</p><h1 id="637cfe46-7d8a-4aae-9916-37827c4f1209" class="">Culture, Cloud, and Microservices</h1><p id="fd3ca9ff-a85e-455e-9214-9db5fdd0bedf" class="">Before we dive into how we build code at Netflix, it’s important to highlight a few key elements that drive and shape the solutions we use: our culture, the cloud, and microservices.</p><p id="305993f8-541e-4819-9433-00d873d251f8" class="">The Netflix culture of <a href="http://www.slideshare.net/reed2001/culture-1798664/39-Seven_Aspects_of_our_Culture">freedom and responsibility</a> empowers engineers to craft solutions using whatever tools they feel are best suited to the task In our experience, for a tool to be widely accepted, it must be compelling, add tremendous value, and reduce the overall cognitive load for the majority of Netflix engineers. Teams have the freedom to implement alternative solutions, but they also take on additional responsibility for maintaining these solutions. Tools offered by centralized teams at Netflix are considered to be part of a “paved road”. Our focus today is solely on the paved road supported by Engineering Tools.</p><p id="5bc926be-fa2d-486f-8c3b-3846dd90998a" class="">In addition, in 2008 Netflix began migrating our <a href="https://media.netflix.com/en/company-blog/completing-the-netflix-cloud-migration">streaming service to AWS</a> and converting our monolithic, datacenter-based Java application to cloud-based Java microservices. Our microservice architecture allows 
+teams at Netflix to be loosely coupled, building and pushing changes at a speed they are comfortable with.</p><h1 id="bbb0479d-a626-4290-a665-1b1c197d7a32" class="">Build</h1><p id="df0571a9-ef31-4cbd-a9cc-51ef25a60f95" class="">Naturally, the first step to deploying an application or service is building. We created <a href="http://nebula-plugins.github.io/">Nebula</a>, an opinionated set of plugins for the <a href="http://www.gradle.org/">Gradle</a> build system, to help with the heavy lifting around building applications. Gradle provides first-class support for building, testing, and packaging Java applications, which covers the majority of our code.
+ <a href="http://nebula-plugins.github.io/documentation/introduction_to_nebula.html#a-brief-history-of-nebula">Gradle was chosen because</a> it was easy to write testable plugins, while reducing the size of a project’s build file. Nebula extends the robust build automation functionality provided by Gradle with a suite of open source plugins for dependency management, release management, packaging, and much more.</p><figure id="c6a5d904-0a52-46f7-99e5-d0cd1e315d1f" class="image"><a href="https://miro.medium.com/v2/resize:fit:1050/0*CbxOEio-l4jnurJa."><img style="width:700px" src="https://miro.medium.com/v2/resize:fit:1050/0*CbxOEio-l4jnurJa."/></a></figure><p id="40c8ba2e-c993-47d2-8617-162a1f14ecd1" class="">A simple Java application build.gradle file. The  above ‘build.gradle’ file represents the build definition for a simple 
+Java application at Netflix. This project’s build declares a few Java dependencies as well as applying 4 Gradle plugins, 3 of which are either a part of Nebula or are internal configurations applied to Nebula plugins. The ‘nebula’ plugin is an internal-only Gradle plugin that provides convention and configuration necessary for integration with our infrastructure. The ‘nebula.dependency-lock’ plugin allows the project to generate a .lock file of the resolved dependency graph that can be versioned, enabling build repeatability. The ‘netflix.ospackage-tomcat’ plugin and the ospackage block will be touched on below. With Nebula, we provide reusable and consistent build functionality, with the goal of reducing boilerplate in each application’s build file. A future techblog post will dive deeper into Nebula and the various features we’ve open sourced. For now, you can check out <a href="http://nebula-plugins.github.io/">the Nebula website</a>.</p><h1 id="6c73cf6c-145b-4a99-a67b-741178c143f8" class="">Integrate</h1><p id="669115b0-3b8e-4b6d-9b58-bcd8567db757" class="">Once a line of code has been built and tested locally using Nebula, it is ready for continuous integration and deployment. The first step is to push the updated source code to a git repository. Teams are free to find
+ a git workflow that works for them.</p><p id="ef23f9c1-b155-4823-b5a3-dffa1780211d" class="">Once the change is committed, a Jenkins job is triggered. Our use of Jenkins for continuous integration has evolved over the years. We started with a single massive Jenkins master in our datacenter and have evolved to 
+running 25 Jenkins masters in AWS. Jenkins is used throughout Netflix for <a href="https://medium.com/@Netflix_Techblog/localization-technologies-at-netflix-d033e7b13cf">a variety of automation tasks</a> above just simple continuous integration.</p><p id="3d9cd9ca-f944-40c1-8374-2d30dc744cf6" class="">A Jenkins job is configured to invoke Nebula to build, test and package the application code. If the repository being built is a library, Nebula will publish the .jar to our artifact repository. If the repository is 
+an application, then the <a href="https://github.com/nebula-plugins/nebula-ospackage-plugin">Nebula ospackage plugin</a> <a href="https://github.com/nebula-plugins/nebula-ospackage-plugin">will be executed</a>. Using the Nebula ospackage (short for “operating system package”) plugin, an application’s build artifact will be bundled into either a 
+Debian or RPM package, whose contents are defined via a simple Gradle-based DSL. Nebula will then publish the Debian file to a package repository where it will be available for the next stage of the process, “baking”.</p><h1 id="df32307d-5ddd-438c-b542-8f2e4e05cddf" class="">Bake</h1><p id="32d4720f-023d-4063-a03f-4bec64095f3d" class="">Our deployment strategy is centered around the <a href="http://martinfowler.com/bliki/ImmutableServer.html">Immutable Server</a> pattern. Live modification of instances is strongly discouraged in order to reduce configuration drift and ensure deployments are repeatable from source. Every deployment at Netflix begins with the creation of a new <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html">Amazon Machine Image</a>, or AMI. To generate AMIs from source, we created “the Bakery”.</p><p id="dc85e30e-c3c5-4c39-a7ee-7ca52bfb6da4" class="">The Bakery exposes an API that facilitates the creation of AMIs globally. The Bakery API service then schedules the actual bake job on worker nodes that use <a href="https://medium.com/@Netflix_Techblog/ami-creation-with-aminator-98d627ca37b0">Aminator</a> to create the image. To trigger a bake, the user declares the package to be installed, as well the foundation image onto which the package is installed. That foundation image, or Base AMI, provides a Linux environment customized with the common conventions, tools, and services 
+required for seamless integration with the greater Netflix ecosystem.</p><p id="f4e18567-e735-4dbd-aae0-0f4c0b625d2a" class="">When a Jenkins job is successful, it typically triggers a <a href="http://spinnaker.io/online_docs/overview/overview.html#deployment-management">Spinnaker pipeline</a>. Spinnaker pipelines can be triggered by a Jenkins job or by a git commit. Spinnaker will read the operating system package generated by Nebula, and call the Bakery API to trigger a bake.</p><h1 id="7d2b2d75-5336-4055-8507-24e03e33ba65" class="">Deploy</h1><p id="55247617-ead2-4e48-8d32-359207abd4f4" class="">Once a bake is complete, Spinnaker makes the resultant AMI available for deployment to tens, hundreds, or thousands of instances. The same AMI is usable across multiple environments as Spinnaker exposes a runtime 
+context to the instance which allows applications to self-configure at runtime. A successful bake will trigger the next stage of the Spinnaker pipeline, a deploy to the test environment. From here, teams will typically exercise the deployment using a battery of automated integration tests. The specifics of an application’s deployment pipeline
+ becomes fairly custom from this point on. Teams will use Spinnaker to manage multi-region deployments, canary releases, red/black deployments and much more. Suffice to say that Spinnaker pipelines provide teams 
+with immense flexibility to control how they deploy code.</p><h1 id="6daa5f77-3f30-419d-a778-2afb6d7c8682" class="">The Road Ahead</h1><p id="2a807e3e-29b7-4d98-bd39-cb39c51485f2" class="">Taken together, these tools enable a high degree of efficiency and automation. For example, it takes just 16 minutes to move our cloud resiliency and maintenance service, <a href="http://github.com/Netflix/SimianArmy">Janitor Monkey</a>, from code check-in to a multi-region deployment.</p><p id="092de24e-c602-4cf0-b9c8-54553bed990b" class="">A Spinnaker bake and deploy pipeline triggered from Jenkins.</p><figure id="2d974ebc-79c0-4cb8-b972-6802fd878337" class="image"><a href="https://miro.medium.com/v2/resize:fit:1500/0*K77gBx_h7xqg0ypP."><img style="width:700px" src="https://miro.medium.com/v2/resize:fit:1500/0*K77gBx_h7xqg0ypP."/></a></figure><p id="0af63c24-597f-40a9-93f9-357ad1dc3821" class="">That said, we are always looking to improve the developer experience and are constantly challenging ourselves to do it better, faster, and while making it easier.</p><p id="1eb5cc7e-75ed-4903-89fe-18cb4828fb75" class="">One challenge we are actively addressing is how we manage binary dependencies at Netflix. Nebula provides tools focused on making Java dependency management easier. For instance, the <a href="https://github.com/nebula-plugins/gradle-dependency-lock-plugin">Nebula dependency-lock plugin</a> allows applications to resolve their complete binary dependency graph and produce a .lock file which can be versioned. The <a href="https://github.com/nebula-plugins/gradle-resolution-rules-plugin">Nebula resolution rules plugin</a> allows us to publish organization-wide dependency rules that impact all Nebula builds. These tools help make binary dependency management easier, but still fall short of reducing the pain to an acceptable level.</p><p id="fc97f0ef-52de-4039-ac1e-2698880b5b8a" class="">Another challenge we are working to address is bake time. It wasn’t long ago that 16-minutes from commit to deployment was a dream, but as other parts of the system have gotten faster, this now feels like an impediment to rapid innovation. From the Simian Army example deployment above, the bake process took 7 minutes or 44% of the total bake and deploy time. We have found the biggest drivers of bake time to be installing packages (including dependency resolution) and the AWS snapshot process itself.</p><p id="4abedf7a-4e37-43a7-be72-bb4a8bdd12e3" class="">As Netflix grows and evolves, there is an increasing demand for our build and deploy toolset to provide first-class support for non-JVM languages, like JavaScript/Node.js, Python, Ruby and Go. Our current recommendation for non-JVM applications is to use the Nebula ospackage plugin to produce a Debian package for baking, leaving the build and test pieces to the engineers and the platform’s preferred tooling. While this solves the needs of teams today, we are expanding our tools to be language agnostic.</p><p id="ccf3f097-ca2a-498a-bd11-b7eacac13908" class="">Containers provide an interesting potential solution to the last two challenges and we are exploring how containers can help improve our current build, bake, and deploy experience. If we can provide a local container-based environment that closely mimics that of our cloud environments, we potentially reduce the amount of baking required during the development and test cycles, improving developer productivity and accelerating the 
+overall development process. A container that can be deployed locally just as it would be in production without modification reduces cognitive load and allows our engineers to focus on solving problems and innovating rather than trying to determine if a bug is due to environmental differences.</p><p id="a7c6e43c-ef08-4d5b-aa4b-a72b8ae43945" class="">You can expect future posts providing updates on how we are addressing these challenges. If these challenges sound exciting to you, come join the Engineering Tools team. You can check out our <a href="https://jobs.netflix.com/jobs">open jobs</a> and apply today!</p><p id="a72c9958-b766-444b-bae6-1072f5ff62f9" class=""><em>— by </em><a href="https://www.linkedin.com/in/edbukoski"><em>Ed Bukoski</em></a><em>, </em><a href="https://www.linkedin.com/in/bmoyles"><em>Brian Moyles</em></a><em>, and </em><a href="https://www.linkedin.com/in/jmcgarr"><em>Mike McGarr</em></a></p></div></article></body></html>

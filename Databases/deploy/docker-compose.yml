@@ -1,0 +1,54 @@
+version: '3.3'
+services:
+  mysql:
+    image: mysql
+    restart: unless-stopped
+    container_name: 'MySQL'
+    environment:
+      MYSQL_USER: 'dev'
+      MYSQL_PASSWORD: DhLd4LEGXYMKqroB
+      MYSQL_ROOT_PASSWORD: DhLd4LEGXYMKqroB
+    ports:
+      - '4001:3306'
+    volumes:
+      - ./mysql/scripts:/home/thibo/scripts
+      - ./mysql/data:/var/lib/mysql
+  mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    restart: unless-stopped
+    container_name: 'Microsoft-SQL-Server'
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=DhLd4LEGXYMKqroB
+      - MSSQL_PID=Express
+    ports:
+      - '4002:1433'
+    volumes:
+      - ./mssql/scripts:/home/thibo/scripts
+      - ./mssql/data:/var/opt/mssql
+  mongo:
+    image: mongo
+    restart: unless-stopped
+    container_name: 'MongoDB'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: DhLd4LEGXYMKqroB
+    ports:
+      - '4003:27017'
+    volumes:
+      - ./mongo/scripts:/home/thibo/scripts
+      - ./mongo/data:/data/db
+  neo4j:
+    image: neo4j
+    restart: unless-stopped
+    container_name: 'Neo4j'
+    hostname: neo4j
+    environment:
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_AUTH: neo4j/DhLd4LEGXYMKqroB
+    ports:
+      - '4004:7687'
+    volumes:
+      - ./neo4j/scripts:/home/thibo/scripts
+      - ./neo4j/data:/var/db/neo4j
+      - ./neo4j/config:/opt/local/etc/neo4j

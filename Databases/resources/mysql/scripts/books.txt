@@ -1,0 +1,109 @@
+CREATE DATABASE books;
+
+USE books;
+
+CREATE TABLE AUTHORS (
+  ano INT NOT NULL AUTO_INCREMENT,
+  lname VARCHAR(50) DEFAULT NULL,
+  fname VARCHAR(50) DEFAULT NULL,
+  birthdate DATE DEFAULT NULL,
+  hometown VARCHAR(80) DEFAULT NULL,
+  PRIMARY KEY (ano)
+) ENGINE = INNODB;
+
+INSERT  INTO AUTHORS(ano,lname,fname,birthdate,hometown) 
+VALUES 	(1,'Marai','Sandor','1900-04-11','San Diego'),
+	(2,'Hermsen','Joke','1961-05-25','Amsterdam'),
+	(3,'Müller','Herta','1953-06-04','Berlijn'),
+	(4,'Converse','Tim','1970-11-05','San Francisco'),
+	(5,'Park','Joyce','1975-07-22','San Francisco'),
+	(6,'Hertmans','Stefan','1955-07-15','Brussel'),
+	(7,'Hosseini','Khaled','1950-04-20','San Francisco'),
+	(8,'Yalom','Irvin','1952-05-06','San Francisco'),
+	(9,'de Rosnay','Tatiana','1963-09-15','Parijs'),
+	(10,'Duenas','Maria','1964-05-24','Madrid'),
+	(11,'Doerr','Anthony','1960-10-24','Boisse'),
+	(12,'De Pauw','Ivo','1955-03-20','Kortrijk'),
+	(13,'Masselis','Bieke','1973-01-05','Kortrijk'),
+	(14,'Verbeken','Pascal','1960-10-05','Brussel'),
+	(15,'Allende','Isabel','1945-06-10','San Francisco'),
+	(16,'Van Reybrouck','David','1971-10-04','Brussel');
+
+CREATE TABLE publishers (
+  pno INT NOT NULL AUTO_INCREMENT,
+  publisher VARCHAR(80) DEFAULT NULL,
+  city VARCHAR(80) DEFAULT NULL,
+  PRIMARY KEY (pno)
+) ENGINE = INNODB;
+
+INSERT  INTO publishers(pno,publisher,city) 
+VALUES	(1,'Academic Service','Den Haag'),
+	(2,'De Geus','Breda'),
+	(3,'De Arbeiderspers','Utrecht'),
+	(4,'Wereldbibliotheek','Amsterdam'),
+	(5,'Lannoo','Tielt'),
+	(6,'De Bezige Bij','Amsterdam'),
+	(7,'Balans','Amsterdam'),
+	(8,'Artemis & co','Amsterdam'),
+	(9,'The house of books', 'Amsterdam'),
+	(10,'Manteau','Antwerpen');
+
+CREATE TABLE books (
+  bno INT NOT NULL AUTO_INCREMENT,
+  title VARCHAR(100) DEFAULT NULL,
+  category VARCHAR(50) DEFAULT NULL,
+  pno INT DEFAULT NULL,
+  price DECIMAL(8,2) DEFAULT NULL,
+  pubdate DATE DEFAULT NULL,
+  PRIMARY KEY (bno),
+  CONSTRAINT fk1_books FOREIGN KEY (pno) REFERENCES publishers (pno)
+) ENGINE = INNODB;
+
+INSERT  INTO books(bno,title,category,pno,price,pubdate) 
+VALUES 	(1,'Ademschommel','Roman',2,'19.00','2009-08-05'),
+	(2,'PHP5 en MySQL','Informatica',1,'45.50','2006-10-30'),
+	(3,'Kairos. Een nieuwe bevlogenheid','Filosofie',3,'19.95','2014-02-01'),
+	(4,'Gloed','Roman',4,'16.50','2011-05-06'),
+	(5,'Hartedier','Roman',2,'19.00','2009-04-01'),
+	(6,'Oorlog en terpentijn','Roman',6,'19.00','2014-01-16'),
+	(7,'De vliegeraar','Roman',6,'19.00','2007-05-17'),
+	(8,'En uit de bergen kwam de echo','Roman',6,'19.00','2013-06-18'),
+	(9,'Nietzsches tranen','Roman',7,'19.90','2007-08-12'),
+	(10,'De therapeut','Roman',7,'19.90','1996-07-06'),
+	(11,'Haar naam was Sarah','Roman',8,'10.00','2009-03-22'),
+	(12,'Het geluid van de nacht','Roman',4,'12.00','2014-02-08'),
+	(13,'Als je het licht niet kunt zien','Roman',9,'12.00','2015-06-22'),
+	(14,'Wiskunde voor IT','Informatica',5,'25.00','2014-03-10'),
+	(15,'Fortunas dochter','Roman',4,'22.00','1999-06-04'),
+	(16,'Paula','Roman',4,'22.00','1994-05-26'),
+	(17,'Congo Een geschiedenis','Roman',6,'24.90','2010-09-08');
+
+CREATE TABLE booksauthors (
+  bno INT NOT NULL,
+  ano INT NOT NULL,
+  PRIMARY KEY (bno,ano),
+  CONSTRAINT fk1_booksauthors FOREIGN KEY (bno) REFERENCES books (bno),
+  CONSTRAINT fk2_booksauthors FOREIGN KEY (ano) REFERENCES AUTHORS (ano)
+) ENGINE = INNODB;
+
+INSERT  INTO booksauthors(bno,ano) 
+VALUES 	(1,3),
+	(2,4),
+	(2,5),
+	(3,2),
+	(4,1),
+	(5,3),
+	(6,6),
+	(7,7),
+	(8,7),
+	(9,8),
+	(10,8),
+	(11,9),
+	(12,10),
+	(13,11),
+	(14,12),
+	(14,13),
+	(15,15),
+	(16,15),
+	(17,16);
+

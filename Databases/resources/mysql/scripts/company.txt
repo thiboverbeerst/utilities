@@ -1,0 +1,94 @@
+CREATE DATABASE company;
+
+USE company;
+
+CREATE TABLE offices
+(officename	CHAR(20) NOT NULL,
+ sector		CHAR(20),
+ city	 	CHAR(20),
+ CONSTRAINT pk_offices PRIMARY KEY (officename)) 
+ENGINE = INNODB;
+
+CREATE TABLE jobs
+(job 		CHAR(20) NOT NULL,
+ minsal		INT,
+ maxsal		INT,
+ CONSTRAINT pk_jobs PRIMARY KEY(job)) 
+ENGINE = INNODB;
+
+CREATE TABLE employees
+(empno		INT NOT NULL,
+ empname	CHAR(20) NOT NULL,
+ division	CHAR(2),
+ job		CHAR(20),
+ salary		INT,
+ officename	CHAR(20),
+ CONSTRAINT pk_employees PRIMARY KEY(empno),
+ CONSTRAINT fk1_employees FOREIGN KEY(officename) REFERENCES offices(officename),
+ CONSTRAINT fk2_employees FOREIGN KEY(job) REFERENCES jobs(job)) 
+ENGINE = INNODB;
+
+CREATE TABLE replacements
+(empno		INT NOT NULL,
+ replno		INT NOT NULL,
+ CONSTRAINT pk_replacements PRIMARY KEY(empno, replno),
+ CONSTRAINT fk1_replacements FOREIGN KEY(empno) REFERENCES employees(empno),
+ CONSTRAINT fk2_replacements FOREIGN KEY(replno) REFERENCES employees(empno)) 
+ENGINE = INNODB;
+
+INSERT INTO offices VALUES ('Computerland','Sales','Brussels');
+INSERT INTO offices VALUES ('Technica','Sales','Antwerp');
+INSERT INTO offices VALUES ('Paradise','Sales','Ghent');
+INSERT INTO offices VALUES ('Training','Training','Antwerp');
+INSERT INTO offices VALUES ('Leasing','Rental','Antwerp');
+INSERT INTO offices VALUES ('BrugIT','Training','Bruges');
+
+INSERT INTO jobs VALUES ('Director',100000,140000);
+INSERT INTO jobs VALUES ('Deputy director',75000,100000);
+INSERT INTO jobs VALUES ('DBA',65000,85000);
+INSERT INTO jobs VALUES ('Teacher',55000,80000);
+INSERT INTO jobs VALUES ('Analyst',45000,60000);
+INSERT INTO jobs VALUES ('Programmer',32000,44000);
+INSERT INTO jobs VALUES ('Engineer',30000,37000);
+INSERT INTO jobs VALUES ('Sales representative',30000,40000);
+INSERT INTO jobs VALUES ('Security',40000,60000);
+
+INSERT INTO employees VALUES (1,'Buylaert','B3','Sales representative',40000,'Computerland');
+INSERT INTO employees VALUES (2,'Vervekke','B3','Sales representative',42000,'Computerland');
+INSERT INTO employees VALUES (3,'Janssens','B1','Director',100000,'Computerland');
+INSERT INTO employees VALUES (4,'Lievens','B2','Analyst',55000,'Computerland');
+INSERT INTO employees VALUES (5,'Lutenberg','B2','Analyst',60000,'Computerland');
+INSERT INTO employees VALUES (6,'Jens','A1','Director',150000,'Technica');
+INSERT INTO employees VALUES (7,'Timan','A1','Deputy director',120000,'Technica');
+INSERT INTO employees VALUES (8,'Imbrecht','A2','Programmer',35000,'Technica');
+INSERT INTO employees VALUES (9,'Pieters','A2','Analyst',43000,'Technica');
+INSERT INTO employees VALUES (10,'Peeters','A2','Analyst',50000,'Technica');
+INSERT INTO employees VALUES (11,'Mansaert','A2','DBA',70000,'Technica');
+INSERT INTO employees VALUES (12,'Lutenberg','G1','Deputy director',85000,'Paradise');
+INSERT INTO employees VALUES (13,'Klerk','G3','Sales representative',28000,'Paradise');
+INSERT INTO employees VALUES (14,'Konings','G2','Analyst',45000,'Paradise');
+INSERT INTO employees VALUES (15,'Dingens','A1','Director',80000,'Training');
+INSERT INTO employees VALUES (16,'Van Loo','A4','Teacher',81000,'Training');
+INSERT INTO employees VALUES (17,'Van Snit','A4','Teacher',60000,'Training');
+INSERT INTO employees VALUES (18,'Van Meer','A3','Engineer',43000,'Leasing');
+INSERT INTO employees VALUES (19,'Meesen','A3','Engineer',37000,'Leasing');
+INSERT INTO employees VALUES (20,'Delmot','A1','Deputy director',83000,'Leasing');
+INSERT INTO employees VALUES (21,'Capelle',NULL,NULL,NULL,NULL);
+
+INSERT INTO replacements VALUES (1,2);
+INSERT INTO replacements VALUES (4,5);
+INSERT INTO replacements VALUES (5,4);
+INSERT INTO replacements VALUES (3,6);
+INSERT INTO replacements VALUES (6,7);
+INSERT INTO replacements VALUES (7,6);
+INSERT INTO replacements VALUES (8,9);
+INSERT INTO replacements VALUES (8,10);
+INSERT INTO replacements VALUES (9,10);
+INSERT INTO replacements VALUES (10,9);
+INSERT INTO replacements VALUES (14,11);
+INSERT INTO replacements VALUES (16,17);
+INSERT INTO replacements VALUES (17,16);
+INSERT INTO replacements VALUES (18,19);
+INSERT INTO replacements VALUES (19,18);
+INSERT INTO replacements VALUES (20,15);
+
